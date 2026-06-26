@@ -193,3 +193,39 @@ eas build:configure
 - [ ] `src/app/(app)/index.tsx` 샘플 코드를 참고해서 개발 시작
 - [ ] 필요 없는 샘플 코드 정리
 - [ ] CHECKLIST.md 삭제 (선택사항)
+
+## 다국어(i18n)가 필요 없는 경우
+한국어만 사용하는 앱이라면 아래를 제거하고 텍스트를 직접 하드코딩하면 돼요:
+
+1. 패키지 제거
+```bash
+npm uninstall i18n-js expo-localization
+```
+
+2. 아래 파일/폴더 삭제
+src/i18n/
+src/hooks/useTranslation.ts
+src/store/languageStore.ts
+
+3. `src/store/index.ts`에서 아래 줄 제거
+```typescript
+export { useLanguageStore } from './languageStore';
+```
+
+4. `src/app/_layout.tsx`에서 아래 줄 제거
+```typescript
+const { loadLanguage } = useLanguageStore();
+loadLanguage();
+```
+
+5. 각 화면에서 `useTranslation` 대신 텍스트 직접 입력
+```typescript
+// 변경 전
+const { t } = useTranslation();
+<Text>{t('auth.title')}</Text>
+
+// 변경 후
+<Text>시작하기</Text>
+```
+
+> 상세 가이드: [docs/i18n.md](docs/i18n.md)

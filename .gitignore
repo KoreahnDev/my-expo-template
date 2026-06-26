@@ -50,3 +50,6 @@ supabase/.temp/
 
 # Supabase 자동 생성 타입 (npx supabase gen types 로 생성)
 src/types/database.types.ts
+
+# user
+temp.txt

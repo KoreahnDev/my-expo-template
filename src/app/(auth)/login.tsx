@@ -4,18 +4,20 @@ import KakaoLoginButton from "@/components/auth/KakaoLoginButton";
 import Divider from "@/components/common/Divider";
 import Screen from "@/components/common/Screen";
 import Text from "@/components/common/Text";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useLoadingStore } from "@/store";
 import { Alert, StyleSheet, View } from "react-native";
 
 export default function LoginScreen() {
   const { show, hide } = useLoadingStore();
+  const { t } = useTranslation();
 
   const handleGoogleLogin = async () => {
     try {
-      show("로그인 중...");
+      show(t("auth.loggingIn"));
       await signInWithGoogle();
     } catch (error) {
-      Alert.alert("오류", "Google 로그인에 실패했습니다.");
+      Alert.alert(t("auth.error"), t("auth.loginFailed"));
     } finally {
       hide();
     }
@@ -23,10 +25,10 @@ export default function LoginScreen() {
 
   const handleKakaoLogin = async () => {
     try {
-      show("로그인 중...");
+      show(t("auth.loggingIn"));
       await signInWithKakao();
     } catch (error) {
-      Alert.alert("오류", "카카오 로그인에 실패했습니다.");
+      Alert.alert(t("auth.error"), t("auth.loginFailed"));
     } finally {
       hide();
     }
@@ -36,12 +38,12 @@ export default function LoginScreen() {
     <Screen>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text variant="h1">시작하기</Text>
-          <Text variant="secondary">소셜 계정으로 간편하게 로그인하세요</Text>
+          <Text variant="h1">{t("auth.title")}</Text>
+          <Text variant="secondary">{t("auth.subtitle")}</Text>
         </View>
         <View style={styles.buttons}>
           <GoogleLoginButton onPress={handleGoogleLogin} />
-          <Divider label="또는" />
+          <Divider label={t("auth.or")} />
           <KakaoLoginButton onPress={handleKakaoLogin} />
         </View>
       </View>

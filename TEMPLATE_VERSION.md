@@ -17,9 +17,27 @@
 | 소셜 로그인 | @react-native-kakao/core | ^2.4.5 |
 | 소셜 로그인 | @react-native-kakao/user | ^2.4.5 |
 | OTA 업데이트 | expo-updates | - |
+| 다국어 | expo-localization | - |
+| 다국어 | i18n-js | - |
 | 애니메이션 | react-native-reanimated | 4.3.1 |
 | 제스처 | react-native-gesture-handler | ~2.31.1 |
 | SVG | react-native-svg | - |
+
+### 공통 컴포넌트
+| 컴포넌트 | 설명 |
+|---------|------|
+| Button | variants: primary, secondary, outline, danger / sizes: sm, md, lg |
+| Text | variants: h1, h2, h3, body, secondary, caption, code |
+| Input | label, error 지원 |
+| Divider | label 지원 |
+| Screen | SafeArea 래퍼 |
+| LoadingOverlay | 글로벌 로딩 (zustand 연동) |
+| Modal | Alert/Dialog (버튼 1개 또는 2개, danger variant 지원) |
+| Toast | 상단 알림 (success/error/warning/info, zustand 연동) |
+| Badge | 텍스트/숫자 뱃지 (success/error/warning/info/neutral) |
+| Avatar | 이니셜/이미지 아바타 (다크모드 지원, 크기 sm/md/lg) |
+| EmptyState | 빈 상태 화면 (아이콘/타이틀/메시지/액션 버튼) |
+| Card | 컨텐츠 컨테이너 (onPress 지원) |
 
 ### 테스트 환경
 - iOS 18 (시뮬레이터)

@@ -1,5 +1,6 @@
 import { FontSize, FontWeight, Radius, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/useTheme";
+import { useTranslation } from "@/hooks/useTranslation";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
@@ -33,6 +34,7 @@ interface Props {
 
 export default function GoogleLoginButton({ onPress, disabled }: Props) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <TouchableOpacity
@@ -51,7 +53,7 @@ export default function GoogleLoginButton({ onPress, disabled }: Props) {
       <View style={styles.content}>
         <GoogleIcon />
         <Text style={[styles.text, { color: colors.text }]}>
-          Sign in with Google
+          {t("auth.googleLogin")}
         </Text>
       </View>
     </TouchableOpacity>

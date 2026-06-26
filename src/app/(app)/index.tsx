@@ -1,42 +1,67 @@
 import { signOut } from "@/api/auth";
+import Avatar from "@/components/common/Avatar";
+import Badge from "@/components/common/Badge";
 import Button from "@/components/common/Button";
+import Card from "@/components/common/Card";
 import Divider from "@/components/common/Divider";
+import EmptyState from "@/components/common/EmptyState";
 import Input from "@/components/common/Input";
+import Modal from "@/components/common/Modal";
 import Screen from "@/components/common/Screen";
 import Text from "@/components/common/Text";
 import { BrandColors, Radius, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/useTheme";
-import { useAuthStore, useLoadingStore, useThemeStore } from "@/store";
+import { useTranslation } from "@/hooks/useTranslation";
+import {
+  useAuthStore,
+  useLanguageStore,
+  useLoadingStore,
+  useThemeStore,
+  useToastStore,
+} from "@/store";
 import { useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const profile = useAuthStore((s) => s.profile);
-  const { themeMode, setThemeMode } = useThemeStore();
-  const { show, hide } = useLoadingStore();
+  const { show: showLoading, hide: hideLoading } = useLoadingStore();
   const { colors, isDark } = useTheme();
+  const { themeMode, setThemeMode } = useThemeStore();
+  const { setLanguage, language } = useLanguageStore();
+  const { show: showToast } = useToastStore();
+  const { t } = useTranslation();
+
   const [inputValue1, setInputValue1] = useState("");
   const [inputValue2, setInputValue2] = useState("");
   const [inputValue3, setInputValue3] = useState("");
   const [inputError, setInputError] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
 
   const handleSignOut = async () => {
     try {
-      show("로그아웃 중...");
+      showLoading(t("auth.loggingOut"));
       await signOut();
     } catch (error) {
-      Alert.alert("오류", "로그아웃에 실패했습니다.");
+      showToast({
+        type: "error",
+        title: t("auth.error"),
+        message: t("auth.logoutFailed"),
+      });
     } finally {
-      hide();
+      hideLoading();
     }
   };
 
   const handleInputValidation = () => {
     if (!inputValue3) {
-      setInputError("값을 입력해주세요.");
+      setInputError(t("home.inputErrorMessage"));
     } else {
       setInputError("");
-      Alert.alert("확인", `입력값: ${inputValue3}`);
+      Alert.alert(
+        t("home.inputConfirm"),
+        t("home.inputConfirmMessage") + inputValue3,
+      );
     }
   };
 
@@ -45,68 +70,74 @@ export default function HomeScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* 프로필 */}
-          <View
-            style={[
-              styles.section,
-              {
-                backgroundColor: colors.backgroundElement,
-                borderRadius: Radius.lg,
-              },
-            ]}
-          >
-            <Text variant="h3">프로필</Text>
+          <Card>
+            <Text variant="h3">{t("home.profile")}</Text>
             <Divider />
             <View style={styles.row}>
-              <Text variant="secondary">이름</Text>
-              <Text>{profile?.full_name ?? "-"}</Text>
+              <Text variant="secondary">{t("home.name")}</Text>
+              <View style={styles.rowRight}>
+                <Avatar name={profile?.full_name ?? "?"} size="sm" />
+                <Text>{profile?.full_name ?? "-"}</Text>
+              </View>
             </View>
             <View style={styles.row}>
-              <Text variant="secondary">이메일</Text>
+              <Text variant="secondary">{t("home.email")}</Text>
               <Text>{profile?.email ?? "-"}</Text>
             </View>
             <View style={styles.row}>
-              <Text variant="secondary">로그인</Text>
-              <Text>{profile?.provider ?? "-"}</Text>
+              <Text variant="secondary">{t("home.loginProvider")}</Text>
+              <Badge
+                label={profile?.provider ?? "-"}
+                type={
+                  profile?.provider === "google"
+                    ? "info"
+                    : profile?.provider === "kakao"
+                      ? "warning"
+                      : "neutral"
+                }
+              />
             </View>
-          </View>
+          </Card>
 
           {/* 타이포그래피 */}
-          <View style={styles.section}>
-            <Text variant="h3">타이포그래피</Text>
+          <Card>
+            <Text variant="h3">{t("home.typography")}</Text>
             <Divider />
-            <Text variant="h1">H1 타이틀</Text>
-            <Text variant="h2">H2 섹션 제목</Text>
-            <Text variant="h3">H3 서브 제목</Text>
-            <Text variant="body">
-              Body 본문 텍스트예요. 읽기 편한 크기와 행간으로 설정되어 있어요.
+            <Text variant="h1">H1 {t("home.typography")}</Text>
+            <Text variant="h2">H2 {t("home.typography")}</Text>
+            <Text variant="h3">H3 {t("home.typography")}</Text>
+            <Text variant="body">Body — {t("home.typographyBody")}</Text>
+            <Text variant="secondary">
+              Secondary — {t("home.typographySecondary")}
             </Text>
-            <Text variant="secondary">Secondary 부가 설명 텍스트</Text>
-            <Text variant="caption">Caption 캡션, 힌트 텍스트</Text>
+            <Text variant="caption">
+              Caption — {t("home.typographyCaption")}
+            </Text>
             <Text variant="code">const hello = 'world'</Text>
-          </View>
+          </Card>
 
           {/* 버튼 */}
-          <View style={styles.section}>
-            <Text variant="h3">버튼</Text>
+          <Card>
+            <Text variant="h3">{t("home.button")}</Text>
             <Divider />
             <Button
-              label="Primary 버튼"
-              onPress={() => Alert.alert("Primary")}
+              label={`Primary ${t("home.button")}`}
+              onPress={() => {}}
               variant="primary"
             />
             <Button
-              label="Secondary 버튼"
-              onPress={() => Alert.alert("Secondary")}
+              label={`Secondary ${t("home.button")}`}
+              onPress={() => {}}
               variant="secondary"
             />
             <Button
-              label="Outline 버튼"
-              onPress={() => Alert.alert("Outline")}
+              label={`Outline ${t("home.button")}`}
+              onPress={() => {}}
               variant="outline"
             />
             <Button
-              label="Danger 버튼"
-              onPress={() => Alert.alert("Danger")}
+              label={`Danger ${t("home.button")}`}
+              onPress={() => {}}
               variant="danger"
             />
             <View style={styles.row}>
@@ -130,40 +161,40 @@ export default function HomeScreen() {
               />
             </View>
             <Button
-              label="로딩 중..."
+              label={t("home.loading")}
               onPress={() => {}}
               variant="primary"
               loading
             />
             <Button
-              label="비활성화"
+              label={t("home.disabled")}
               onPress={() => {}}
               variant="primary"
               disabled
             />
-          </View>
+          </Card>
 
           {/* 인풋 */}
-          <View style={styles.section}>
-            <Text variant="h3">인풋</Text>
+          <Card>
+            <Text variant="h3">{t("home.input")}</Text>
             <Divider />
-            <Text variant="caption">라벨 없음</Text>
+            <Text variant="caption">{t("home.inputNoLabel")}</Text>
             <Input
-              placeholder="라벨 없는 인풋"
+              placeholder={t("home.inputPlaceholder")}
               value={inputValue1}
               onChangeText={setInputValue1}
             />
-            <Text variant="caption">라벨 있음</Text>
+            <Text variant="caption">{t("home.inputWithLabel")}</Text>
             <Input
-              label="이름"
-              placeholder="홍길동"
+              label={t("home.name")}
+              placeholder={t("home.namePlaceholder")}
               value={inputValue2}
               onChangeText={setInputValue2}
             />
-            <Text variant="caption">에러 상태</Text>
+            <Text variant="caption">{t("home.inputError")}</Text>
             <Input
-              label="이메일"
-              placeholder="hello@example.com"
+              label={t("home.email")}
+              placeholder={t("home.emailPlaceholder")}
               value={inputValue3}
               onChangeText={(text) => {
                 setInputValue3(text);
@@ -172,22 +203,22 @@ export default function HomeScreen() {
               error={inputError}
             />
             <Button
-              label="유효성 검사"
+              label={t("home.inputValidate")}
               onPress={handleInputValidation}
               variant="outline"
             />
-          </View>
+          </Card>
 
           {/* 구분선 */}
-          <View style={styles.section}>
-            <Text variant="h3">구분선</Text>
+          <Card>
+            <Text variant="h3">{t("home.divider")}</Text>
             <Divider />
-            <Divider label="또는" />
-          </View>
+            <Divider label={t("auth.or")} />
+          </Card>
 
           {/* 색상 */}
-          <View style={styles.section}>
-            <Text variant="h3">색상</Text>
+          <Card>
+            <Text variant="h3">{t("home.color")}</Text>
             <Divider />
             <View style={styles.colorRow}>
               {[
@@ -228,46 +259,218 @@ export default function HomeScreen() {
                 </View>
               ))}
             </View>
-          </View>
+          </Card>
 
-          {/* 테마 */}
-          <View style={styles.section}>
-            <Text variant="h3">테마</Text>
+          {/* 뱃지 */}
+          <Card>
+            <Text variant="h3">{t("home.badge")}</Text>
+            <Divider />
+            <View style={styles.badgeRow}>
+              <Badge label="완료" type="success" />
+              <Badge label="오류" type="error" />
+              <Badge label="주의" type="warning" />
+              <Badge label="정보" type="info" />
+              <Badge label="기본" type="neutral" />
+            </View>
+            <View style={[styles.badgeRow, { marginTop: Spacing.two }]}>
+              <Badge variant="dot" type="error" count={3} />
+              <Badge variant="dot" type="info" count={12} />
+              <Badge variant="dot" type="success" count={99} />
+              <Badge variant="dot" type="warning" count={100} />
+            </View>
+          </Card>
+
+          {/* 아바타 */}
+          <Card>
+            <Text variant="h3">{t("home.avatar")}</Text>
+            <Divider />
+            <View style={styles.avatarRow}>
+              <Avatar name="홍길동" size="lg" showStatus online />
+              <Avatar name="Kim Min" size="md" showStatus />
+              <Avatar name="Lee Junho" size="md" />
+              <Avatar name="홍길동" size="sm" />
+            </View>
+          </Card>
+
+          {/* 빈 상태 */}
+          <Card>
+            <Text variant="h3">{t("home.emptyState")}</Text>
+            <Divider />
+            <EmptyState
+              icon="📭"
+              title={t("home.emptyTitle")}
+              message={t("home.emptyMessage")}
+              actionLabel={t("home.emptyAction")}
+              onAction={() =>
+                showToast({ type: "info", title: "추가하기 클릭!" })
+              }
+            />
+          </Card>
+
+          {/* 모달 */}
+          <Card>
+            <Text variant="h3">{t("home.modal")}</Text>
             <Divider />
             <View style={styles.row}>
               <Button
-                label="라이트"
+                label={t("home.alertShow")}
+                onPress={() => setAlertVisible(true)}
+                variant="outline"
+                style={{ flex: 1 }}
+              />
+              <Button
+                label={t("home.dialogShow")}
+                onPress={() => setModalVisible(true)}
+                variant="outline"
+                style={{ flex: 1 }}
+              />
+            </View>
+          </Card>
+
+          {/* 토스트 */}
+          <Card>
+            <Text variant="h3">{t("home.toast")}</Text>
+            <Divider />
+            <View style={styles.row}>
+              <Button
+                label="Success"
+                onPress={() =>
+                  showToast({
+                    type: "success",
+                    title: "저장되었습니다",
+                    message: "변경사항이 저장되었어요.",
+                  })
+                }
+                variant="outline"
+                size="sm"
+                style={{ flex: 1 }}
+              />
+              <Button
+                label="Error"
+                onPress={() =>
+                  showToast({
+                    type: "error",
+                    title: "오류",
+                    message: "잠시 후 다시 시도해주세요.",
+                  })
+                }
+                variant="outline"
+                size="sm"
+                style={{ flex: 1 }}
+              />
+            </View>
+            <View style={styles.row}>
+              <Button
+                label="Warning"
+                onPress={() =>
+                  showToast({
+                    type: "warning",
+                    title: "주의",
+                    message: "네트워크를 확인해주세요.",
+                  })
+                }
+                variant="outline"
+                size="sm"
+                style={{ flex: 1 }}
+              />
+              <Button
+                label="Info"
+                onPress={() =>
+                  showToast({
+                    type: "info",
+                    title: "안내",
+                    message: "새로운 업데이트가 있어요.",
+                  })
+                }
+                variant="outline"
+                size="sm"
+                style={{ flex: 1 }}
+              />
+            </View>
+          </Card>
+
+          {/* 테마 */}
+          <Card>
+            <Text variant="h3">{t("home.theme")}</Text>
+            <Divider />
+            <View style={styles.row}>
+              <Button
+                label={t("home.themeLight")}
                 onPress={() => setThemeMode("light")}
                 variant={themeMode === "light" ? "primary" : "outline"}
                 size="sm"
                 style={{ flex: 1 }}
               />
               <Button
-                label="시스템"
+                label={t("home.themeSystem")}
                 onPress={() => setThemeMode("system")}
                 variant={themeMode === "system" ? "primary" : "outline"}
                 size="sm"
                 style={{ flex: 1 }}
               />
               <Button
-                label="다크"
+                label={t("home.themeDark")}
                 onPress={() => setThemeMode("dark")}
                 variant={themeMode === "dark" ? "primary" : "outline"}
                 size="sm"
                 style={{ flex: 1 }}
               />
             </View>
-          </View>
+          </Card>
+
+          {/* 언어 */}
+          <Card>
+            <Text variant="h3">{t("home.language")}</Text>
+            <Divider />
+            <View style={styles.row}>
+              <Button
+                label="한국어"
+                onPress={() => setLanguage("ko")}
+                variant={language === "ko" ? "primary" : "outline"}
+                size="sm"
+                style={{ flex: 1 }}
+              />
+              <Button
+                label="English"
+                onPress={() => setLanguage("en")}
+                variant={language === "en" ? "primary" : "outline"}
+                size="sm"
+                style={{ flex: 1 }}
+              />
+            </View>
+          </Card>
 
           {/* 로그아웃 */}
           <Button
-            label="로그아웃"
+            label={t("home.logout")}
             onPress={handleSignOut}
             variant="danger"
             fullWidth
           />
         </View>
       </ScrollView>
+
+      {/* 모달 */}
+      <Modal
+        visible={alertVisible}
+        title={t("home.alertTitle")}
+        message={t("home.alertMessage")}
+        confirmLabel={t("home.confirm")}
+        onConfirm={() => setAlertVisible(false)}
+      />
+      <Modal
+        visible={modalVisible}
+        title={t("home.dialogTitle")}
+        message={t("home.dialogMessage")}
+        confirmLabel={t("home.delete")}
+        confirmVariant="danger"
+        cancelLabel={t("home.cancel")}
+        onConfirm={() => {
+          setModalVisible(false);
+          showToast({ type: "success", title: "삭제되었습니다." });
+        }}
+        onCancel={() => setModalVisible(false)}
+      />
     </Screen>
   );
 }
@@ -277,16 +480,16 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
     paddingBottom: Spacing.six,
   },
-  section: {
-    gap: Spacing.two,
-    padding: Spacing.three,
-    borderRadius: Radius.lg,
-  },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     gap: Spacing.two,
+  },
+  rowRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.one,
   },
   colorRow: {
     flexDirection: "row",
@@ -301,5 +504,16 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: Radius.md,
+  },
+  badgeRow: {
+    flexDirection: "row",
+    gap: Spacing.two,
+    flexWrap: "wrap",
+    alignItems: "center",
+  },
+  avatarRow: {
+    flexDirection: "row",
+    gap: Spacing.three,
+    alignItems: "center",
   },
 });

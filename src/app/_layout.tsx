@@ -1,7 +1,8 @@
 import LoadingOverlay from "@/components/common/LoadingOverlay";
+import Toast from "@/components/common/Toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useOTAUpdate } from "@/hooks/useOTAUpdate";
-import { useThemeStore } from "@/store";
+import { useLanguageStore, useThemeStore, useToastStore } from "@/store";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { initializeKakaoSDK } from "@react-native-kakao/core";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -32,10 +33,12 @@ function RootLayoutNav() {
   const segments = useSegments();
   const router = useRouter();
   const { loadThemeMode, themeMode } = useThemeStore();
+  const { loadLanguage } = useLanguageStore();
   const systemColorScheme = useColorScheme();
 
   useEffect(() => {
     loadThemeMode();
+    loadLanguage();
   }, []);
 
   useEffect(() => {
@@ -62,12 +65,21 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const { visible, type, title, message, duration, hide } = useToastStore();
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <RootLayoutNav />
         <LoadingOverlay />
+        <Toast
+          visible={visible}
+          type={type}
+          title={title}
+          message={message}
+          duration={duration}
+          onHide={hide}
+        />
       </ThemeProvider>
     </QueryClientProvider>
   );

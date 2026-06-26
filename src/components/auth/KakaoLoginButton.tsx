@@ -1,4 +1,5 @@
 import { FontSize, FontWeight, Radius, Spacing } from "@/constants/theme";
+import { useTranslation } from "@/hooks/useTranslation";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
@@ -19,6 +20,8 @@ interface Props {
 }
 
 export default function KakaoLoginButton({ onPress, disabled }: Props) {
+  const { t } = useTranslation();
+
   return (
     <TouchableOpacity
       style={[styles.button, disabled && styles.disabled]}
@@ -28,7 +31,7 @@ export default function KakaoLoginButton({ onPress, disabled }: Props) {
     >
       <View style={styles.content}>
         <KakaoIcon />
-        <Text style={styles.text}>카카오 로그인</Text>
+        <Text style={styles.text}>{t("auth.kakaoLogin")}</Text>
       </View>
     </TouchableOpacity>
   );

@@ -62,6 +62,23 @@ export const BadgeColors = {
   },
 } as const;
 
+export const AvatarColors = {
+  light: [
+    { background: "#E6F1FB", color: "#185FA5" },
+    { background: "#FAECE7", color: "#993C1D" },
+    { background: "#EAF3DE", color: "#3B6D11" },
+    { background: "#EEEDFE", color: "#3C3489" },
+    { background: "#E1F5EE", color: "#0F6E56" },
+  ],
+  dark: [
+    { background: "#0C447C", color: "#B5D4F4" },
+    { background: "#712B13", color: "#F5C4B3" },
+    { background: "#27500A", color: "#C0DD97" },
+    { background: "#3C3489", color: "#CECBF6" },
+    { background: "#085041", color: "#9FE1CB" },
+  ],
+} as const;
+
 export const Fonts = Platform.select({
   ios: {
     sans: "system-ui",
